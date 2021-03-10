@@ -1,19 +1,23 @@
 ﻿using System;
 
-namespace SingletonExample
+namespace Builder
 {
     class Program
     {
         static void Main(string[] args)
         {
-            
-            logginUser user1 = logginUser.Initialise();
-            logginUser user2 = logginUser.Initialise();
-            
-           /* ... */
+            MakeBoxBuilder builder = new MakeBoxBuilder();
 
-            Console.ReadKey();
-            
+            builder.Length(2.5);
+            builder.Width(5);
+            builder.Height(4.25);
+            builder.TextOnBox("Cadou pentru familia Botnaru");
+            builder.Wrapped(true);
+            builder.To("Alexandru Botnaru");
+
+            MakeBox box = builder.Build();
+
+            Console.ReadLine();
         }
     }
 }
