@@ -1,91 +1,94 @@
-class Client
+class Book
 {
-    public void Main()
+    public string Name { get; set; }
+}
+class Library
+{
+    private Book[] books;
+}
+
+class Program
+{
+    static void Main(string[] args)
     {
-        Aggregate a = new ConcreteAggregate();
-             
-        Iterator i = a.CreateIterator();
+        Library library = new Library();
+        Reader reader = new Reader();
+        reader.SeeBooks(library);
  
-        object item = i.First();
-        while (!i.IsDone())
+        Console.Read();
+    }
+}
+ 
+class Reader
+{
+    public void SeeBooks(Library library)
+    {
+        IBookIterator iterator = library.CreateNumerator();
+        while(iterator.HasNext())
         {
-            item = i.Next();
+            Book book = iterator.Next();
+            Console.WriteLine(book.Name);
         }
     }
 }
  
-abstract class Aggregate
+interface IBookIterator
 {
-    public abstract Iterator CreateIterator();
-    public abstract int Count { get; protected set; }
-    public abstract object this[int index] { get; set; }
+    bool HasNext();
+    Book Next();
 }
-  
-class ConcreteAggregate : Aggregate
+interface IBookNumerable
 {
-    private readonly ArrayList _items = new ArrayList();
-  
-    public override Iterator CreateIterator()
+    IBookIterator CreateNumerator();
+    int Count { get; }
+    Book this[int index] { get;}
+}
+class Book
+{
+    public string Name { get; set; }
+}
+ 
+class Library : IBookNumerable
+{
+    private Book[] books;
+    public Library()
     {
-        return new ConcreteIterator(this);
+        books = new Book[]
+        {
+            new Book{Name="C# in Nutshell"},
+            new Book {Name="Emotion Intelligence"},
+            new Book {Name="Marketing"}
+        };
     }
-  
-    public override int Count
+    public int Count
     {
-        get { return _items.Count; }
-        protected set { }
+        get { return books.Length; }
     }
  
-    public override object this[int index]
+    public Book this[int index]
     {
-        get { return _items[index]; }
-        set { _items.Insert(index, value); }
+        get { return books[index]; }
+    }
+    public IBookIterator CreateNumerator()
+    {
+        return new LibraryNumerator(this);
     }
 }
-abstract class Iterator
+class LibraryNumerator : IBookIterator
 {
-    public abstract object First();
-    public abstract object Next();
-    public abstract bool IsDone();
-    public abstract object CurrentItem();
-}
-  
-class ConcreteIterator : Iterator
-{
-    private readonly Aggregate _aggregate;
-    private int _current;
-  
-    public ConcreteIterator(Aggregate aggregate)
+    IBookNumerable aggregate;
+    int index=0;
+    public LibraryNumerator(IBookNumerable a)
     {
-        this._aggregate = aggregate;
+        aggregate = a;
     }
-  
-    public override object First()
+    public bool HasNext()
     {
-        return _aggregate[0];
+        return index<aggregate.Count;
     }
-  
-    public override object Next()
+ 
+    public Book Next()
     {
-        object ret = null;
-  
-        _current++;
-  
-        if (_current < _aggregate.Count)
-        {
-            ret = _aggregate[_current];
-        }
-  
-        return ret;
-    }
-  
-    public override object CurrentItem()
-    {
-        return _aggregate[_current];
-    }
-  
-    public override bool IsDone()
-    {
-        return _current >= _aggregate.Count;
+        return aggregate[index++];
     }
 }
