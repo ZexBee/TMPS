@@ -1,0 +1,49 @@
+class Program
+{
+    static void Main(string[] args)
+    {
+        Mob entity = new entity(2, "Solder", new FriendlyMob());
+        entity.Mob();
+        entity.Mobs = new VillianMob();
+        entity.Mob();
+ 
+        Console.ReadLine();
+    }
+}
+interface IMobs
+{
+    void Mob();
+}
+ 
+class VillianMob : IMobs
+{
+    public void Mob()
+    {
+        Console.WriteLine("A villian mob appears");
+    }
+}
+ 
+class FriendlyMob : IMobs
+{
+    public void Mob()
+    {
+        Console.WriteLine("A friendly mob appears");
+    }
+}
+class Mob
+{
+    protected int health; 
+    protected string gameModel; 
+ 
+    public Mob(int health, string gameModel, IMobs pmo)
+    {
+        this.health = health;
+        this.gameModel = gameModel;
+        Mobs = pmo;
+    }
+    public IMobs Mobs { private get; set; }
+    public void Mob()
+    {
+        Mobs.Mob();
+    }
+}
